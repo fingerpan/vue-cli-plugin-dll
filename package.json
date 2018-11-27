@@ -1,0 +1,25 @@
+{
+  "name": "vue-cli-plugin-dll",
+  "version": "1.0.2",
+  "description": "vue/cli 3 pulgin dll",
+  "main": "service.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
+  },
+  "keywords": [
+    "vue-cli3\u001b[D",
+    "\u001b[3",
+    "plugin",
+    "add"
+  ],
+  "author": "youngpan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fingerpan/vue-cli-plugin-dll/issues"
+  },
+  "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme"
+}
