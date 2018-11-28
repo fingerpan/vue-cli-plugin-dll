@@ -1,4 +1,3 @@
-
 const log = (msg) => {
     msg && console && console.log && console.log(msg)
 }
@@ -8,63 +7,43 @@ const log = (msg) => {
 
 module.exports = (api, options) => {
     api.registerCommand('dll', {
-        description: 'build dll ventor',
+        description: 'build dll',
         usage: 'vue-cli-service dll',
         options: {}
     }, async function dll(args) {
         log('Starting build dll...')
 
 
-        // 
         let dllConfig = options.pluginOptions.dll
         if (!dllConfig) {
-            throw Error('dll')
+            throw Error('dll config no fined by pluginOptions proptoty of vue.config.js')
         }
 
-        // although this is primarily a dev server, it is possible that we
-        // are running it in a mode with a production env, e.g. in E2E tests.
-        // const isInContainer = checkInContainer()
-        const isProduction = process.env.NODE_ENV === 'production'
+
         const webpack = require('webpack')
         const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-
-        // todo
-        // do more 
-
-
-
-        // resolve webpack config
         const webpackConfig = api.resolveWebpackConfig()
 
-
         // 更新配置
-        let plugins = webpackConfig.plugins = webpackConfig.plugins || []
-
+        webpackConfig.plugins = webpackConfig.plugins || []
         // remove DllReferencePlugin HtmlWebpackPlugin
-        plugins = plugins.filter(i => !(i instanceof webpack.DllReferencePlugin || i instanceof HtmlWebpackPlugin))
+        webpackConfig.plugins = webpackConfig.plugins.filter(i => !(i instanceof webpack.DllReferencePlugin || i instanceof HtmlWebpackPlugin))
 
         // and DllPlugin
-        plugins.push(
+        webpackConfig.plugins.push(
             new webpack.DllPlugin(dllConfig.DllPlugin)
         )
 
-        // concat plugins
-        if (dllConfig.plugins) {
-            plugins = plugins.concat(dllConfig.plugins)
-        }
+
+        // delete splitChunks
+        delete webpackConfig.optimization.splitChunks
+
 
         // entry arg
-        // output
-        const entry = dllConfig.entry
-        if (entry) {
-            webpackConfig.entry = entry
-            webpackConfig.output = dllConfig.output
-        }
+        webpackConfig.entry = dllConfig.entry
+        webpackConfig.output = dllConfig.output
 
-        webpackConfig.plugins = plugins
-
-
+        webpackConfig.plugins = [...webpackConfig.plugins, ...dllConfig.plugins]
 
 
         return new Promise((resolve, reject) => {
@@ -78,7 +57,7 @@ module.exports = (api, options) => {
                 }
 
                 console.log('Build complete.')
-                
+
                 resolve()
             })
         })
@@ -87,5 +66,5 @@ module.exports = (api, options) => {
 
 
 module.exports.defaultModes = {
-    serve: 'production'
+    dll: 'production'
 }
