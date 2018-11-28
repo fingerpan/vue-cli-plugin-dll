@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-dll",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "vue/cli 3 pulgin dll",
   "main": "service.js",
   "scripts": {
