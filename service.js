@@ -1,50 +1,86 @@
-const log = (msg) => {
-    msg && console && console.log && console.log(msg)
-}
 
 
+const {
+    log,
+    isNewTarget,
+    forEachObj,
+    isFunctionAndCall
+} = require('./util')
+
+const Dll = require('./dll.js')
 
 
 module.exports = (api, options) => {
+
+    const webpack = require('webpack')
+
+    let dllConfig = options.pluginOptions.dll
+    let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
+
+
+    api.chainWebpack((config) => {
+        if (!dllInstall.isOpen) return;
+
+        // add DllReferencePlugin
+        let referenceArgs = dllInstall.resolveDllReferenceArgs()
+        if (referenceArgs.length !== 0) {
+            config
+                .plugin('dll-reference')
+                .use(webpack.DllReferencePlugin, referenceArgs)
+        }
+    })
+
+
     api.registerCommand('dll', {
         description: 'build dll',
         usage: 'vue-cli-service dll',
         options: {}
     }, async function dll(args) {
-        log('Starting build dll...')
 
 
-        let dllConfig = options.pluginOptions.dll
-        if (!dllConfig) {
-            throw Error('dll config no fined by pluginOptions proptoty of vue.config.js')
+        // entry is must be
+        if (!dllInstall.validateEntry()) {
+            throw Error('"entry" parameter no found, more config url:')
         }
 
 
-        const webpack = require('webpack')
+        api.chainWebpack((config) => {
+            // and DllPlugin
+            config
+                .plugin('dll')
+                .use(webpack.DllPlugin, dllInstall.resolveDllArgs())
+
+            // clear entry
+            config.entryPoints.clear()
+            config.optimization.delete('splitChunks')
+
+            // set output
+            forEachObj(dllInstall.resolveOutput(), (fnName, value) => {
+                isFunctionAndCall(config.output[fnName], config.output, value)
+            })
+
+        })
+
         const HtmlWebpackPlugin = require('html-webpack-plugin')
-        const webpackConfig = api.resolveWebpackConfig()
+        let webpackConfig = api.resolveWebpackConfig()
 
-        // 更新配置
-        webpackConfig.plugins = webpackConfig.plugins || []
         // remove DllReferencePlugin HtmlWebpackPlugin
-        webpackConfig.plugins = webpackConfig.plugins.filter(i => !(i instanceof webpack.DllReferencePlugin || i instanceof HtmlWebpackPlugin))
+        webpackConfig.plugins = webpackConfig.plugins.filter(i => {
+            const isNewTarge_curryed = C => isNewTarget(i, c)
+            let isRemovePlugin = [
+                webpack.DllReferencePlugin,
+                HtmlWebpackPlugin
+            ].some(isNewTarge_curryed)
+            return !isRemovePlugin
+        })
+        
 
-        // and DllPlugin
-        webpackConfig.plugins.push(
-            new webpack.DllPlugin(dllConfig.DllPlugin)
-        )
+        // entry output arg
+        webpackConfig.entry = dllInstall.resolveEntry()
 
 
-        // delete splitChunks
-        delete webpackConfig.optimization.splitChunks
-
-
-        // entry arg
-        webpackConfig.entry = dllConfig.entry
-        webpackConfig.output = dllConfig.output
-
-        webpackConfig.plugins = [...webpackConfig.plugins, ...dllConfig.plugins]
-
+        console.log(webpackConfig.plugins)
+        log('Starting build dll...')
 
         return new Promise((resolve, reject) => {
             webpack(webpackConfig, (err, stats) => {
@@ -57,7 +93,6 @@ module.exports = (api, options) => {
                 }
 
                 console.log('Build complete.')
-
                 resolve()
             })
         })

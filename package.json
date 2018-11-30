@@ -1,25 +1,56 @@
 {
-  "name": "vue-cli-plugin-dll",
-  "version": "1.0.3",
+  "_args": [
+    [
+      "vue-cli-plugin-dll@1.0.3",
+      "D:\\youngpan\\t8t-scm-ewc"
+    ]
+  ],
+  "_development": true,
+  "_from": "vue-cli-plugin-dll@1.0.3",
+  "_id": "vue-cli-plugin-dll@1.0.3",
+  "_inBundle": false,
+  "_integrity": "sha512-C6LWRaPZMEo2p6Fy2fBUNv1KPSu6IySxne/jQObRIaeguKoc6zaqPi43Hf50FoIWT3kPgPHolcbdMzHeZvtPpA==",
+  "_location": "/vue-cli-plugin-dll",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "vue-cli-plugin-dll@1.0.3",
+    "name": "vue-cli-plugin-dll",
+    "escapedName": "vue-cli-plugin-dll",
+    "rawSpec": "1.0.3",
+    "saveSpec": null,
+    "fetchSpec": "1.0.3"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "http://192.168.1.156:4873/vue-cli-plugin-dll/-/vue-cli-plugin-dll-1.0.3.tgz",
+  "_spec": "1.0.3",
+  "_where": "D:\\youngpan\\t8t-scm-ewc",
+  "author": {
+    "name": "youngpan"
+  },
+  "bugs": {
+    "url": "https://github.com/fingerpan/vue-cli-plugin-dll/issues"
+  },
   "description": "vue/cli 3 pulgin dll",
-  "main": "service.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
-  },
+  "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme",
   "keywords": [
     "vue-cli3\u001b[D",
     "\u001b[3",
     "plugin",
     "add"
   ],
-  "author": "youngpan",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fingerpan/vue-cli-plugin-dll/issues"
+  "main": "service.js",
+  "name": "vue-cli-plugin-dll",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
   },
-  "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.3"
 }
