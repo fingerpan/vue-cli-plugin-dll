@@ -1,9 +1,7 @@
 
-# vue-cli-plugin-dll
-
+# vue-cli-plugin-dll [![vue-cli3](https://img.shields.io/badge/vue--cli-3.x-brightgreen.svg)](https://github.com/vuejs/vue-cli)
 Vue CLI 3 plugin for Dll and DllReference
 
-[![vue-cli3](https://img.shields.io/badge/vue--cli-3.x-brightgreen.svg)](https://github.com/vuejs/vue-cli)
 
 
 ## Getting started
@@ -88,39 +86,35 @@ module.exports = {
 
 ## more Expamle
 ### entry config
-入口的配置有两种方式
-##### 第一种
-> 在vue.config.js的入口定义，但是你必须按照一定的格式来写入口，比如：
+> config entry in vue.config.js, but you have to configure it in the prescribed format.
 ``` javascript
 module.exports = {
   // Other options...
 
   entry: {
-      // 单入口
+      // Single entry
       dll: ['vue', 'axios'],
-      // 采用有自定义名称的单入口
-      dll_vendorName:  ['vue', 'axios'],
+      // or
+      dll_vendorName: ['vue', 'axios'],
 
-      // 支持多入口
+      // Multiple entry
       dll_vendorNameOne: ['vue-route'],
       dll_vendorNameTwo: ['vue-vuex'], 
   }
 }
 
 ```
-##### 第二种
-> 在 pluginOptions 中的 dll 设置入口
+> the entry also can be configured via the pluginOptions in vue.config.js
 ``` javascript
-
 module.exports = {
   // Other options...
 
   pluginOptions: {
       dll: {
-          // 单入口
+           // Single entry
           entry: ['vue', 'axios'],
 
-          // 支持多入口
+          // Multiple entry
           entry: {
             vendorNameOne: ['vue-route'],
             vendorNameTwo: ['vue-vuex'], 

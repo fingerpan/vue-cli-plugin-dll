@@ -1,5 +1,3 @@
-
-
 const {
     log,
     isNewTarget,
@@ -13,9 +11,7 @@ const Dll = require('./dll.js')
 module.exports = (api, options) => {
 
     const webpack = require('webpack')
-
-    let dllConfig = options.pluginOptions.dll
-    let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
+    let dllInstall = new Dll(api.resolveWebpackConfig(), options.pluginOptions.dll)
 
 
     api.chainWebpack((config) => {
@@ -73,13 +69,13 @@ module.exports = (api, options) => {
             ].some(isNewTarge_curryed)
             return !isRemovePlugin
         })
-        
+
 
         // entry output arg
         webpackConfig.entry = dllInstall.resolveEntry()
 
 
-        console.log(webpackConfig.plugins)
+        // console.log(webpackConfig.plugins)
         log('Starting build dll...')
 
         return new Promise((resolve, reject) => {
