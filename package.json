@@ -1,6 +1,6 @@
 {
     "name": "vue-cli-plugin-fll",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "vue-cli 3 plugin for Dll and DllReference",
     "main": "service.js",
     "repository": {
