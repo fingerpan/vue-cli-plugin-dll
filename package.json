@@ -17,6 +17,15 @@
     ],
     "author": "youngpan <youngpan2014@outlook.com>",
     "license": "ISC",
+    "peerDependencies": {
+       "@vue/cli": "3.x" 
+    },
+    {
+       "engines":
+           {
+               "node": ">=8.9"
+            }
+     },
     "_development": true,
     "_from": "vue-cli-plugin-dll@1.0.3",
     "_id": "vue-cli-plugin-dll@1.0.3",
