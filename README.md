@@ -3,6 +3,7 @@
 Vue CLI 3 plugin for Dll and DllReference
 
 
+# English | [中文](https://github.com/fingerpan/vue-cli-plugin-dll/wiki/README.%E4%B8%AD%E6%96%87)
 
 ## Getting started
 
@@ -73,7 +74,7 @@ module.exports = {
 | entry | Object/Array/String | vendor entry | null | true 
 | open | Boolean | Enable DllReferencePlugin  | true | false 
 | output | String | chunk and manifest file dir | 'yourProjectPath/public/dll' | false 
-| inject | true/false/'auto' | auto inject chunk | true | auto 
+| inject | true/false/'auto' | auto inject chunk | 'auto' |  false
 
 ## more Expamle
 ### entry config
