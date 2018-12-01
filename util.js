@@ -25,18 +25,21 @@ const merge = (target, ...sources) => {
             target[key] = value
         })
     })
+    return target
 }
 
 const log = (msg) => {
     msg && console && console.log && console.log(msg)
 }
 
-const isNewTarget = (target, ClassName) => {
-    return target instanceof ClassName
+
+const isInstallOf = (target, ...classList) => {
+    return classList.some(C => target instanceof C)
 }
 
 
-const matchEntryName = /^(dll)$|^dll_([a-zA-Z]+)/
+const MatchEntryName_REG = /^(dll)$|^dll_([a-zA-Z]+)/
+exports.MatchEntryName_REG = MatchEntryName_REG
 exports.getEntryByWConfig = (entry) => {
     if (!isObject(entry)) {
         return {}
@@ -44,7 +47,7 @@ exports.getEntryByWConfig = (entry) => {
     let entryKeys = Object.keys(entry)
     return entryKeys
         .map((i, index) => {
-            let result = i.match(matchEntryName)
+            let result = i.match(MatchEntryName_REG)
             if (result) {
                 let {
                     1: defaultName,
@@ -65,12 +68,20 @@ exports.getEntryByWConfig = (entry) => {
 
 
 exports.normalizeRntry = (entry) => {
-    if (isObject(entry)) {
-        return entry
+    if (!isObject(entry)) {
+        entry = {
+            dll: entry
+        }
     }
-    return {
-        dll: entry
-    }
+
+    Object.keys(entry).forEach(name => {
+        let entryValue = entry[name]
+        entry[name] = Array.isArray(entryValue) ? entryValue : [entryValue]
+    })
+
+
+
+    return entry
 }
 
 exports.tryGetManifestJson = (jsonPath) => {
@@ -87,11 +98,12 @@ exports.tryGetManifestJson = (jsonPath) => {
     return getJon
 }
 
+exports.replaceAsyncName = i => i.replace(/\[.+\]/g, '*')
 
 
+exports.log = log
+exports.merge = merge
 exports.isObject = isObject
 exports.forEachObj = forEachObj
+exports.isInstallOf = isInstallOf
 exports.isFunctionAndCall = isFunctionAndCall
-exports.merge = merge
-exports.log = log
-exports.isNewTarget = isNewTarget

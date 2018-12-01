@@ -1,44 +1,47 @@
 {
-    "name": "vue-cli-plugin-fll",
-    "version": "1.0.4",
-    "description": "vue-cli 3 plugin for Dll and DllReference",
-    "main": "service.js",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
-    },
-    "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme",
-    "keywords": [
-      "vue",
-      "vue-cli",
-      "plugin",
-      "Dll",
-      "DllReference"
-    ],
-    "author": "youngpan <youngpan2014@outlook.com>",
-    "license": "ISC",
-    "peerDependencies": {
-       "@vue/cli": "3.x" 
-    },
-    "engines": {
-       "node": ">=8.9"
-    },
-    "_development": true,
-    "_from": "vue-cli-plugin-dll@1.0.3",
-    "_id": "vue-cli-plugin-dll@1.0.3",
-    "_inBundle": false,
-    "_integrity": "sha512-C6LWRaPZMEo2p6Fy2fBUNv1KPSu6IySxne/jQObRIaeguKoc6zaqPi43Hf50FoIWT3kPgPHolcbdMzHeZvtPpA==",
-    "_location": "/vue-cli-plugin-dll",
-    "_phantomChildren": {},
-    "_requested": {
-      "type": "version",
-      "registry": true,
-      "raw": "vue-cli-plugin-dll@1.0.3",
-      "name": "vue-cli-plugin-dll",
-      "escapedName": "vue-cli-plugin-dll",
-      "rawSpec": "1.0.3",
-      "saveSpec": null,
-      "fetchSpec": "1.0.3"
-    }
+  "name": "vue-cli-plugin-fll",
+  "version": "1.0.4",
+  "description": "vue-cli 3 plugin for Dll and DllReference",
+  "main": "service.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
+  },
+  "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme",
+  "keywords": [
+    "vue",
+    "vue-cli",
+    "plugin",
+    "Dll",
+    "DllReference"
+  ],
+  "author": "youngpan <youngpan2014@outlook.com>",
+  "license": "ISC",
+  "peerDependencies": {
+    "@vue/cli": "3.x"
+  },
+  "engines": {
+    "node": ">=8.9"
+  },
+  "_development": true,
+  "_from": "vue-cli-plugin-dll@1.0.3",
+  "_id": "vue-cli-plugin-dll@1.0.3",
+  "_inBundle": false,
+  "_integrity": "sha512-C6LWRaPZMEo2p6Fy2fBUNv1KPSu6IySxne/jQObRIaeguKoc6zaqPi43Hf50FoIWT3kPgPHolcbdMzHeZvtPpA==",
+  "_location": "/vue-cli-plugin-dll",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "vue-cli-plugin-dll@1.0.3",
+    "name": "vue-cli-plugin-dll",
+    "escapedName": "vue-cli-plugin-dll",
+    "rawSpec": "1.0.3",
+    "saveSpec": null,
+    "fetchSpec": "1.0.3"
+  },
+  "devDependencies": {
+    "add-asset-html-webpack-plugin": "^3.1.2",
+    "clean-webpack-plugin": "^1.0.0"
+  }
 }
-  

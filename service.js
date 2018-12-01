@@ -1,8 +1,9 @@
 const {
     log,
-    isNewTarget,
+    isInstallOf,
     forEachObj,
-    isFunctionAndCall
+    isFunctionAndCall,
+
 } = require('./util')
 
 const Dll = require('./dll.js')
@@ -11,19 +12,27 @@ const Dll = require('./dll.js')
 module.exports = (api, options) => {
 
     const webpack = require('webpack')
-    let dllInstall = new Dll(api.resolveWebpackConfig(), options.pluginOptions.dll)
-
+    let dllConfig = options.pluginOptions && options.pluginOptions.dll || {}
+    let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
 
     api.chainWebpack((config) => {
-        if (!dllInstall.isOpen) return;
+        if (!dllInstall.isOpen || dllInstall.isCommand === true) return;
 
         // add DllReferencePlugin
         let referenceArgs = dllInstall.resolveDllReferenceArgs()
-        if (referenceArgs.length !== 0) {
-            config
-                .plugin('dll-reference')
-                .use(webpack.DllReferencePlugin, referenceArgs)
-        }
+
+        config
+            .when(referenceArgs.length !== 0, config => {
+                const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+                referenceArgs.forEach(args => {
+                    config.plugin(`dll-reference-${args.manifest.name}`).use(webpack.DllReferencePlugin, [args])
+                })
+
+                // auto inject
+                if (dllInstall.inject) {
+                    config.plugin(`add-asset-html`).use(AddAssetHtmlPlugin, dllInstall.resolveAddAssetHtmlArgs())
+                }
+            });
     })
 
 
@@ -32,6 +41,7 @@ module.exports = (api, options) => {
         usage: 'vue-cli-service dll',
         options: {}
     }, async function dll(args) {
+        dllInstall.callCommand()
 
 
         // entry is must be
@@ -39,43 +49,37 @@ module.exports = (api, options) => {
             throw Error('"entry" parameter no found, more config url:')
         }
 
-
+        const cleanwebpackPlugin = require('clean-webpack-plugin')
         api.chainWebpack((config) => {
-            // and DllPlugin
+            // and clean DllPlugin
             config
+                .plugin('clean')
+                .use(cleanwebpackPlugin, dllInstall.resolveCleanArgs())
+                .end()
                 .plugin('dll')
                 .use(webpack.DllPlugin, dllInstall.resolveDllArgs())
 
-            // clear entry
-            config.entryPoints.clear()
             config.optimization.delete('splitChunks')
+            config.devtool(false)
 
             // set output
             forEachObj(dllInstall.resolveOutput(), (fnName, value) => {
                 isFunctionAndCall(config.output[fnName], config.output, value)
             })
-
         })
 
         const HtmlWebpackPlugin = require('html-webpack-plugin')
+        const PreloadPlugin = require('@vue/preload-webpack-plugin')
         let webpackConfig = api.resolveWebpackConfig()
 
         // remove DllReferencePlugin HtmlWebpackPlugin
-        webpackConfig.plugins = webpackConfig.plugins.filter(i => {
-            const isNewTarge_curryed = C => isNewTarget(i, c)
-            let isRemovePlugin = [
-                webpack.DllReferencePlugin,
-                HtmlWebpackPlugin
-            ].some(isNewTarge_curryed)
-            return !isRemovePlugin
-        })
-
+        webpackConfig.plugins = webpackConfig.plugins.filter(i => !isInstallOf(i, webpack.DllReferencePlugin, HtmlWebpackPlugin, PreloadPlugin))
 
         // entry output arg
         webpackConfig.entry = dllInstall.resolveEntry()
 
 
-        // console.log(webpackConfig.plugins)
+        // return false
         log('Starting build dll...')
 
         return new Promise((resolve, reject) => {
