@@ -4,45 +4,51 @@ const {
     merge,
     normalizeRntry,
     getEntryByWConfig,
-    tryGetManifestJson
+    tryGetManifestJson,
+    MatchEntryName_REG,
+    replaceAsyncName
 } = require('./util')
-
-
-
-const defaultConfig = {
-    manifest: '[name]-manifest.json',
-    filename: '[name].[hash:8].dll.js',
-    library: '[name]_library',
-    outputDir: './public/dll'
-}
 
 module.exports = class Dll {
 
-    constructor(webpackConfig, dllConfig = {
-        open: true
-    }) {
+    static DefaultDllConfig() {
+        return {
+            open: 'auto',
+            inject: true
+        }
+    }
+    static DefaultConfig() {
+        return {
+            manifest: '[name].manifest.json',
+            filename: '[name].[hash:8].dll.js',
+            library: '[name]_library',
+            outputDir: './public/dll'
+        }
+    }
+
+
+    constructor(webpackConfig, dllConfig = {}) {
         this.webpackConfig = webpackConfig
-        this.dllConfig = dllConfig
-        this.context = webpackConfig.context
+        this.dllConfig = merge(Dll.DefaultDllConfig(), dllConfig)
+        this.context = webpackConfig.context || __dirname
+        this.isCommand = false
+        this.isOpen = false
+        this.inject = this.dllConfig.inject
 
 
-        merge(this, defaultConfig)
-        this.outputPath = path.join(this.context, this.outputDir)
+        merge(this, Dll.DefaultConfig())
+        this.outputPath = this.dllConfig.output || path.join(this.context, this.outputDir)
 
         // init
         this.initEntry()
         this.initOutputPath()
         this.initOpen()
     }
-    /**
-     * init entry
-     */
+
+    // init options ------
     initEntry() {
         this.entry = normalizeRntry(this.dllConfig.entry) || getEntryByWConfig(this.webpackConfig.entery)
     }
-    /**
-     * normalize outputName
-     */
     initOutputPath() {
         let dllConfig = this.dllConfig
         let outputPath = isObject(dllConfig.output) && dllConfig.output.path
@@ -50,14 +56,12 @@ module.exports = class Dll {
             this.outputPath = outputPath
         }
     }
-    /**
-     * init isOpen attr
-     */
     initOpen() {
-        this.isOpen = this.dllConfig.open !== undefined ? this.dllConfig.open : this.validateEntry()
+        let open = this.dllConfig.open
+        this.isOpen = open === 'auto' ? this.validateEntry() : open
     }
 
-
+    // tool -------------
     /**
      * validate has entry
      * @return {boolean}
@@ -65,6 +69,18 @@ module.exports = class Dll {
     validateEntry() {
         return Object.keys(this.entry).length !== 0
     }
+
+    /**
+     * set isCommand if call dll command
+     */
+    callCommand() {
+        this.isCommand = true
+    }
+
+
+
+    // resolve args ---------------
+
 
     resolvePath(...args) {
         return path.resolve(this.outputPath, ...args)
@@ -89,6 +105,16 @@ module.exports = class Dll {
         }]
     }
 
+    resolveCleanArgs() {
+        let pathList = [this.filename, this.manifest].map(replaceAsyncName)
+        return [
+            pathList, {
+                root: this.outputPath,
+                verbose: true,
+            }
+        ]
+    }
+
     resolveDllReferenceArgs() {
         return Object.keys(this.resolveEntry()).map((entryName) => {
             let jsonPath = this.resolvePath('./', this.manifest.replace('[name]', entryName))
@@ -99,5 +125,11 @@ module.exports = class Dll {
                 manifest
             }
         }).filter(i => !!i)
+    }
+
+    resolveAddAssetHtmlArgs() {
+        return [{
+            filepath: this.resolvePath(replaceAsyncName(this.filename))
+        }]
     }
 }

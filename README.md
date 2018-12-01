@@ -24,17 +24,7 @@ vue invoke dll
 ### Quick Start
 > Simple configuration [more]()
 
-#### you can config vondor in entry
-```javascript
- // vue.config.js
-
- module.exports = {
-    entry: {
-        dll: ['vue', 'vue-route']
-    }
- }
-```
-#### if you want make your configuration clear, you can config options of `pluginOptions` in `vue.config.js`:
+#### you can config options of `pluginOptions` in `vue.config.js`:
 ```javascript
 // vue.config.js
 
@@ -70,7 +60,7 @@ module.exports = {
       // vonder entry
       entry: ''
       // chunk and manifest file dir
-      output: ''  // default 'yourProjectPath/pul'
+      output: ''
     }
   }
 }
@@ -78,33 +68,16 @@ module.exports = {
 
 ## options
 
-| name | type | des | default | required |
+| name | type/value-set | des | default | required |
 | :--- | :--- | :--- | :--- | :--- |
-| entry | Object/Array/String | Vondor entry | null | true 
-| open | Binary | Enable DllReferencePlugin  | true | false 
+| entry | Object/Array/String | vendor entry | null | true 
+| open | Boolean | Enable DllReferencePlugin  | true | false 
 | output | String | chunk and manifest file dir | 'yourProjectPath/public/dll' | false 
+| inject | true/false/'auto' | auto inject chunk | true | auto 
 
 ## more Expamle
 ### entry config
-> config entry in vue.config.js, but you have to configure it in the prescribed format.
-``` javascript
-module.exports = {
-  // Other options...
-
-  entry: {
-      // Single entry
-      dll: ['vue', 'axios'],
-      // or
-      dll_vendorName: ['vue', 'axios'],
-
-      // Multiple entry
-      dll_vendorNameOne: ['vue-route'],
-      dll_vendorNameTwo: ['vue-vuex'], 
-  }
-}
-
-```
-> the entry also can be configured via the pluginOptions in vue.config.js
+> the entry can be configured via the pluginOptions in vue.config.js
 ``` javascript
 module.exports = {
   // Other options...
