@@ -1,5 +1,5 @@
 {
-  "name": "vue-cli-plugin-fll",
+  "name": "vue-cli-plugin-dll",
   "version": "1.0.4",
   "description": "vue-cli 3 plugin for Dll and DllReference",
   "main": "service.js",
@@ -43,5 +43,8 @@
   "devDependencies": {
     "clean-webpack-plugin": "^1.0.0",
     "add-asset-html-webpack-plugin": "^3.1.2"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
   }
 }
