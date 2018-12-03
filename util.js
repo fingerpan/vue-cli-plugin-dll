@@ -83,8 +83,8 @@ exports.getEntryByWConfig = (entry) => {
         }, {})
 }
 
-exports.normalizeRntry = (entry) => {
-    if (!isObject(entry)) {
+exports.normalizeRntry = (entry = {}) => {
+    if (!isObject(entry) && entry) {
         entry = {
             dll: entry
         }
@@ -101,12 +101,14 @@ exports.tryGetManifestJson = (jsonPath) => {
     try {
         getJon = require(jsonPath)
     } catch (e) {
-        // todo 提示，该入口找不到文件入口，请先执行dll
-        console.log('warn   ----------------------')
-        console.log('')
-        console.log('')
-        console.warn(`no found ${jsonPath}`)
-        console.log('if you want to use DllReferencePlugin pleace run dll')
+        log(' ')
+        log('vue-cli-plugin-dll warning!! miss manifest.json')
+        log(' ')
+        log(' ')
+        log(`no found ${jsonPath}`)
+        log(' ')
+        log(`if you want to use DllReferencePlugin，execute the command 'npm run dll' first`)
+        log(' ')
     }
     return getJon
 }

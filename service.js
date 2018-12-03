@@ -14,20 +14,19 @@ module.exports = (api, options) => {
     let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
 
     api.chainWebpack((config) => {
-        if (!dllInstall.isOpen || dllInstall.isCommand === true) return
+        if (!dllInstall.isOpen || dllInstall.isCommand === true) return false
 
-        // add DllReferencePlugin
         let referenceArgs = dllInstall.resolveDllReferenceArgs()
-
         config
             .when(referenceArgs.length !== 0, config => {
-                const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+                // add DllReferencePlugin
                 referenceArgs.forEach(args => {
                     config.plugin(`dll-reference-${args.manifest.name}`).use(webpack.DllReferencePlugin, [args])
                 })
 
-                // auto inject
+                // auto inject, add add-asset-html-webpack-plugin plugin
                 if (dllInstall.inject) {
+                    const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
                     config.plugin(`add-asset-html`).use(AddAssetHtmlPlugin, dllInstall.resolveAddAssetHtmlArgs())
                 }
             })
@@ -42,7 +41,10 @@ module.exports = (api, options) => {
 
         // entry is must be
         if (!dllInstall.validateEntry()) {
-            throw Error('"entry" parameter no found, more config url:')
+            throw Error(
+                `The entry parameter was not found, more details: 
+                https://github.com/fingerpan/vue-cli-plugin-dll/tree/master#readme`
+            )
         }
 
         const cleanwebpackPlugin = require('clean-webpack-plugin')

@@ -1,5 +1,5 @@
 const path = require('path')
-const { isObject, merge, normalizeRntry, getEntryByWConfig, tryGetManifestJson, replaceAsyncName } = require('./util')
+const { isObject, merge, normalizeRntry, tryGetManifestJson, replaceAsyncName } = require('./util')
 
 module.exports = class Dll {
 	static DefaultDllConfig() {
@@ -36,7 +36,8 @@ module.exports = class Dll {
 
 	// init options ------
 	initEntry() {
-		this.entry = normalizeRntry(this.dllConfig.entry) || getEntryByWConfig(this.webpackConfig.entery)
+		// getEntryByWConfig(this.webpackConfig.entery)
+		this.entry = normalizeRntry(this.dllConfig.entry)
 	}
 	initOutputPath() {
 		let dllConfig = this.dllConfig
@@ -108,6 +109,8 @@ module.exports = class Dll {
 		return Object.keys(this.resolveEntry())
 			.map((entryName) => {
 				let jsonPath = this.resolvePath('./', this.manifest.replace('[name]', entryName))
+
+				// todo，目前只有提示，没有报错
 				let manifest = tryGetManifestJson(jsonPath)
 				if (!manifest) return false
 				return {
