@@ -1,7 +1,7 @@
 module.exports = (api) => {
     api.extendPackage({
         scripts: {
-            'dll': 'vue-cli-service dll',
+            'dll': 'vue-cli-service dll'
         }
     })
 }

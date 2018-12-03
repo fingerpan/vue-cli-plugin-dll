@@ -2,21 +2,19 @@ const {
     log,
     isInstallOf,
     forEachObj,
-    isFunctionAndCall,
+    isFunctionAndCall
 
 } = require('./util')
 
 const Dll = require('./dll.js')
 
-
 module.exports = (api, options) => {
-
     const webpack = require('webpack')
-    let dllConfig = options.pluginOptions && options.pluginOptions.dll || {}
+    let dllConfig = (options.pluginOptions && options.pluginOptions.dll) || {}
     let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
 
     api.chainWebpack((config) => {
-        if (!dllInstall.isOpen || dllInstall.isCommand === true) return;
+        if (!dllInstall.isOpen || dllInstall.isCommand === true) return
 
         // add DllReferencePlugin
         let referenceArgs = dllInstall.resolveDllReferenceArgs()
@@ -32,17 +30,15 @@ module.exports = (api, options) => {
                 if (dllInstall.inject) {
                     config.plugin(`add-asset-html`).use(AddAssetHtmlPlugin, dllInstall.resolveAddAssetHtmlArgs())
                 }
-            });
+            })
     })
-
 
     api.registerCommand('dll', {
         description: 'build dll',
         usage: 'vue-cli-service dll',
         options: {}
-    }, async function dll(args) {
+    }, async function dll (args) {
         dllInstall.callCommand()
-
 
         // entry is must be
         if (!dllInstall.validateEntry()) {
@@ -78,7 +74,6 @@ module.exports = (api, options) => {
         // entry output arg
         webpackConfig.entry = dllInstall.resolveEntry()
 
-
         // return false
         log('Starting build dll...')
 
@@ -89,7 +84,7 @@ module.exports = (api, options) => {
                 }
 
                 if (stats.hasErrors()) {
-                    return reject(`Build failed with errors.`)
+                    return reject(new Error('Build failed with errors.'))
                 }
 
                 console.log('Build complete.')
@@ -98,7 +93,6 @@ module.exports = (api, options) => {
         })
     })
 }
-
 
 module.exports.defaultModes = {
     dll: 'production'

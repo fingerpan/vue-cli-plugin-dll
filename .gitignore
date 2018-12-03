@@ -4,7 +4,7 @@
 node_modules
 
 # npm
-npm-debug.log*
+npm-debug.log
 package-lock.json
 .npm
 

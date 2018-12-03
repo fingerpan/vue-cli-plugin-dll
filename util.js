@@ -5,17 +5,36 @@
  */
 const isObject = (i) => Object.prototype.toString.call(i) === '[object Object]'
 
-
+/**
+ * forEach Object
+ * @param {Object} obj target Source
+ * @param {*} callback callback
+ */
 const forEachObj = (obj, callback) => {
+    if (!isObject(obj)) return false
     for (const key in obj) {
-        callback(key, obj[key])
+        if (obj.hasOwnProperty(key)) callback(key, obj[key])
     }
+    return obj
 }
 
+/**
+ * is function to call
+ * @param {Function} fn target Func
+ * @param {Object} context fn context
+ * @param {...any} args fn arguments
+ * @returns result of function call
+ */
 const isFunctionAndCall = (fn, context, ...args) => {
     return typeof fn === 'function' && fn.apply(context, args)
 }
 
+/**
+ * extend object
+ * @param {Object} target target
+ * @param {...Object} sources sourceList
+ * @returns {Object} target
+ */
 const merge = (target, ...sources) => {
     sources.forEach((sourceItem) => {
         if (!isObject(sourceItem)) {
@@ -32,22 +51,21 @@ const log = (msg) => {
     msg && console && console.log && console.log(msg)
 }
 
-
 const isInstallOf = (target, ...classList) => {
     return classList.some(C => target instanceof C)
 }
 
-
-const MatchEntryName_REG = /^(dll)$|^dll_([a-zA-Z]+)/
-exports.MatchEntryName_REG = MatchEntryName_REG
+// match dll
+const MatchEntryNameREG = /^(dll)$|^dll_([a-zA-Z]+)/
+exports.MatchEntryName_REG = MatchEntryNameREG
 exports.getEntryByWConfig = (entry) => {
     if (!isObject(entry)) {
         return {}
     }
     let entryKeys = Object.keys(entry)
     return entryKeys
-        .map((i, index) => {
-            let result = i.match(MatchEntryName_REG)
+        .map(i => {
+            let result = i.match(MatchEntryNameREG)
             if (result) {
                 let {
                     1: defaultName,
@@ -65,8 +83,6 @@ exports.getEntryByWConfig = (entry) => {
         }, {})
 }
 
-
-
 exports.normalizeRntry = (entry) => {
     if (!isObject(entry)) {
         entry = {
@@ -74,13 +90,9 @@ exports.normalizeRntry = (entry) => {
         }
     }
 
-    Object.keys(entry).forEach(name => {
-        let entryValue = entry[name]
+    forEachObj(entry, (name, entryValue) => {
         entry[name] = Array.isArray(entryValue) ? entryValue : [entryValue]
     })
-
-
-
     return entry
 }
 
@@ -91,7 +103,8 @@ exports.tryGetManifestJson = (jsonPath) => {
     } catch (e) {
         // todo 提示，该入口找不到文件入口，请先执行dll
         console.log('warn   ----------------------')
-        console.log()
+        console.log('')
+        console.log('')
         console.warn(`no found ${jsonPath}`)
         console.log('if you want to use DllReferencePlugin pleace run dll')
     }
@@ -99,7 +112,6 @@ exports.tryGetManifestJson = (jsonPath) => {
 }
 
 exports.replaceAsyncName = i => i.replace(/\[.+\]/g, '*')
-
 
 exports.log = log
 exports.merge = merge
