@@ -4,7 +4,7 @@
 Vue CLI 3 plugin for Dll and DllReference
 
 
-### English | [中文](https://github.com/fingerpan/vue-cli-plugin-dll/wiki/README.%E4%B8%AD%E6%96%87)
+### English | [中文](https://github.com/fingerpan/vue-cli-plugin-dll/wiki/zh_cn.md)
 
 
 **:star: Features:**
