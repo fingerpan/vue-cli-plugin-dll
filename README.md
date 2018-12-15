@@ -9,8 +9,8 @@ Vue CLI 3 plugin for Dll and DllReference
 
 **:star: Features:**
 - More injection mode options
-- Support packaging components
-
+- add changeLog file
+- add util test
 
 ## Getting started
 
@@ -30,7 +30,7 @@ vue invoke dll
 
 
 ### Quick Start
-> Simple configuration [more]()
+> Simple configuration
 
 #### you can config options of `pluginOptions` in `vue.config.js`:
 ```javascript

@@ -3,10 +3,9 @@ const {
     isInstallOf,
     forEachObj,
     isFunctionAndCall
+} = require('./src/helper')
 
-} = require('./util')
-
-const Dll = require('./dll.js')
+const Dll = require('./src/dll.js')
 
 module.exports = (api, options) => {
     const webpack = require('webpack')
@@ -14,9 +13,10 @@ module.exports = (api, options) => {
     let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
 
     api.chainWebpack((config) => {
-        if (!dllInstall.isOpen || dllInstall.isCommand === true) return false
+        if (!dllInstall.isOpen || dllInstall.isCommand === true) return
 
         let referenceArgs = dllInstall.resolveDllReferenceArgs()
+
         config
             .when(referenceArgs.length !== 0, config => {
                 // add DllReferencePlugin
@@ -24,10 +24,21 @@ module.exports = (api, options) => {
                     config.plugin(`dll-reference-${args.manifest.name}`).use(webpack.DllReferencePlugin, [args])
                 })
 
-                // auto inject, add add-asset-html-webpack-plugin plugin
+                // auto inject
                 if (dllInstall.inject) {
-                    const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
-                    config.plugin(`add-asset-html`).use(AddAssetHtmlPlugin, dllInstall.resolveAddAssetHtmlArgs())
+                    config.plugin(`add-asset-html`).use(require('add-asset-html-webpack-plugin'), dllInstall.resolveAddAssetHtmlArgs())
+
+                    config
+                        .plugin('copy')
+                        .tap(args => {
+                            args[0][0].ignore.push(dllInstall.outputDir + '/**')
+                            args[0].push({
+                                from: dllInstall.outputPath,
+                                toType: 'dir',
+                                ignore: ['*.js', '*.css', '*.manifest.json']
+                            })
+                            return args
+                        });
                 }
             })
     })
@@ -36,26 +47,21 @@ module.exports = (api, options) => {
         description: 'build dll',
         usage: 'vue-cli-service dll',
         options: {}
-    }, async function dll (args) {
+    }, async function dll(args) {
         dllInstall.callCommand()
 
         // entry is must be
         if (!dllInstall.validateEntry()) {
-            throw Error(
-                `The entry parameter was not found, more details: 
-                https://github.com/fingerpan/vue-cli-plugin-dll/tree/master#readme`
-            )
+            throw Error('"entry" parameter no found, more config url:')
         }
 
-        const cleanwebpackPlugin = require('clean-webpack-plugin')
+        const FileNameCachePlugin = require('./src/fileNameCachePlugin')
+
         api.chainWebpack((config) => {
-            // and clean DllPlugin
             config
-                .plugin('clean')
-                .use(cleanwebpackPlugin, dllInstall.resolveCleanArgs())
+                .plugin('dll').use(webpack.DllPlugin, dllInstall.resolveDllArgs())
                 .end()
-                .plugin('dll')
-                .use(webpack.DllPlugin, dllInstall.resolveDllArgs())
+                .plugin('file-list-plugin').use(FileNameCachePlugin)
 
             config.optimization.delete('splitChunks')
             config.devtool(false)
@@ -66,30 +72,41 @@ module.exports = (api, options) => {
             })
         })
 
-        const HtmlWebpackPlugin = require('html-webpack-plugin')
-        const PreloadPlugin = require('@vue/preload-webpack-plugin')
         let webpackConfig = api.resolveWebpackConfig()
+        let VueLoaderPlugin = require('vue-loader/lib/plugin')
+        let DefinePlugin = require('webpack/lib/DefinePlugin')
+        let FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
+        let NamedChunksPlugin = require('webpack/lib/NamedChunksPlugin')
+        let MiniCssExtreactPlugin = require('mini-css-extract-plugin')
+        let fs = require('fs-extra')
 
-        // remove DllReferencePlugin HtmlWebpackPlugin
-        webpackConfig.plugins = webpackConfig.plugins.filter(i => !isInstallOf(i, webpack.DllReferencePlugin, HtmlWebpackPlugin, PreloadPlugin))
+        // filter plugins
+        webpackConfig.plugins = webpackConfig.plugins.filter(i => isInstallOf(i,
+            VueLoaderPlugin,
+            DefinePlugin,
+            FriendlyErrorsWebpackPlugin,
+            NamedChunksPlugin,
+            MiniCssExtreactPlugin,
+            webpack.DllPlugin,
+            FileNameCachePlugin,
+        ))
 
-        // entry output arg
+        // reset entry
         webpackConfig.entry = dllInstall.resolveEntry()
 
-        // return false
-        log('Starting build dll...')
+        // remove dir
+        fs.remove(dllInstall.outputPath)
 
+        log('Starting build dll...')
         return new Promise((resolve, reject) => {
             webpack(webpackConfig, (err, stats) => {
                 if (err) {
                     return reject(err)
-                }
-
-                if (stats.hasErrors()) {
+                } else if (stats.hasErrors()) {
                     return reject(new Error('Build failed with errors.'))
                 }
 
-                console.log('Build complete.')
+                log('Build complete.')
                 resolve()
             })
         })
@@ -97,5 +114,5 @@ module.exports = (api, options) => {
 }
 
 module.exports.defaultModes = {
-    dll: 'production'
+    dll: 'production',
 }
