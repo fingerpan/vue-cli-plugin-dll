@@ -26,7 +26,9 @@ module.exports = (api, options) => {
 
                 // auto inject
                 if (dllInstall.inject) {
-                    config.plugin(`add-asset-html`).use(require('add-asset-html-webpack-plugin'), dllInstall.resolveAddAssetHtmlArgs())
+                    config
+                        .plugin(`add-asset-html`)
+                        .use(require('add-asset-html-webpack-plugin'), dllInstall.resolveAddAssetHtmlArgs())
 
                     config
                         .plugin('copy')
