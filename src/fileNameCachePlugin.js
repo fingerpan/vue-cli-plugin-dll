@@ -6,7 +6,7 @@ const cacheFilePath = path.resolve(__dirname, './', cacheFileName)
 
 module.exports = class FileNameCachePlugin {
     static saveCacheFileNameList(list) {
-        fs.writeFile(cacheFilePath, JSON.stringify(list))
+        fs.writeFile(cacheFilePath, JSON.stringify(list), () => {})
     }
 
     static getCacheFileNameList() {
