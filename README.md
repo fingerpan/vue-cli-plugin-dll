@@ -9,8 +9,8 @@ Vue CLI 3 plugin for Dll and DllReference
 
 **:star: Features:**
 - More injection mode options
-- Support packaging components
-
+- add changeLog file
+- add util test
 
 ## Getting started
 
@@ -30,7 +30,7 @@ vue invoke dll
 
 
 ### Quick Start
-> Simple configuration [more]()
+> Simple configuration
 
 #### you can config options of `pluginOptions` in `vue.config.js`:
 ```javascript
@@ -79,9 +79,9 @@ module.exports = {
 | name | type/value-set | des | default | required |
 | :--- | :--- | :--- | :--- | :--- |
 | entry | Object/Array/String | vendor entry | null | true 
-| open | Boolean | Enable DllReferencePlugin  | true | false 
+| open | true/false/'auto' | Enable DllReferencePlugin  | 'auto' | false 
 | output | String | chunk and manifest file dir | 'yourProjectPath/public/dll' | false 
-| inject | true/false/'auto' | auto inject chunk | 'auto' |  false
+| inject | Boolean | auto inject chunk | true |  false
 
 ## more Expamle
 ### entry config

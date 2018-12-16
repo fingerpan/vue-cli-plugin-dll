@@ -55,6 +55,16 @@ const isInstallOf = (target, ...classList) => {
     return classList.some(C => target instanceof C)
 }
 
+const compose = function compose(...funs) {
+    let length = funs.length
+    if (length === 0) {
+        return i => i
+    } else if (length === 1) {
+        return funs[0]
+    }
+    return funs.reduce((a, b) => (...args) => a(b(...args)))
+}
+
 // match dll
 const MatchEntryNameREG = /^(dll)$|^dll_([a-zA-Z]+)/
 exports.MatchEntryName_REG = MatchEntryNameREG
@@ -115,8 +125,18 @@ exports.tryGetManifestJson = (jsonPath) => {
 
 exports.replaceAsyncName = i => i.replace(/\[.+\]/g, '*')
 
+// 获取到
+
+const getFileType = (filePath) => {
+    return filePath.substring(filePath.lastIndexOf('.') + 1)
+}
+
+
+
 exports.log = log
 exports.merge = merge
+exports.compose = compose
+exports.getFileType = getFileType
 exports.isObject = isObject
 exports.forEachObj = forEachObj
 exports.isInstallOf = isInstallOf
