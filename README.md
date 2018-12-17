@@ -7,7 +7,7 @@ Vue CLI 3 plugin for Dll and DllReference
 ### English | [中文](https://github.com/fingerpan/vue-cli-plugin-dll/wiki/zh_cn.md)
 
 
-**:star: Features:**
+**:star: TODO:**
 - More injection mode options
 - add changeLog file
 - add util test
@@ -100,6 +100,38 @@ module.exports = {
             vendorNameOne: ['vue-route'],
             vendorNameTwo: ['vue-vuex'], 
          }
+      }
+   }
+}
+```
+
+### open config
+> add webpack.DllReferencePlugin
+``` javascript
+module.exports = {
+  // Other options...
+
+  pluginOptions: {
+      dll: {
+          entry: ['vue'],
+          // only add webpack.DllReferencePlugin plugin in production model
+          open: process.env.NODE_ENV === 'production', //         
+      }
+   }
+}
+```
+
+### inject config
+>  auto inject vendor file by 'add-asset-html-webpack-plugin' plugin
+``` javascript
+module.exports = {
+  // Other options...
+
+  pluginOptions: {
+      dll: {
+        entry: ['vue'],
+        // If you manually quote vendor file in 'index.html' file 
+        inject: false
       }
    }
 }
