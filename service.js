@@ -5,7 +5,7 @@ const {
     isFunctionAndCall
 } = require('./src/helper')
 
-const Dll = require('./src/Dll.js')
+const Dll = require('./src/dll.js')
 
 module.exports = (api, options) => {
     const webpack = require('webpack')
