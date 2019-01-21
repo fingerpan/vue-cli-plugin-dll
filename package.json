@@ -17,9 +17,6 @@
     ],
     "author": "youngpan <youngpan2014@outlook.com>",
     "license": "MIT",
-    "peerDependencies": {
-        "@vue/cli": "3.x"
-    },
     "engines": {
         "node": ">=8.0"
     },
