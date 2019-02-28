@@ -1,33 +1,53 @@
 const path = require('path')
-const { isObject, merge, normalizeRntry, tryGetManifestJson, replaceAsyncName, getFileType, compose } = require('./helper')
-const { getCacheFileNameList, setCacheFileNamePath } = require('./fileNameCachePlugin')
+const {
+    isObject,
+    merge,
+    normalizeRntry,
+    tryGetManifestJson,
+    replaceAsyncName,
+    getAssetHtmlPluginDefaultArg,
+    isAcceptTypeByAssetPluginByPath,
+    compose
+} = require('./helper')
+const {
+    getCacheFileNameList,
+    setCacheFileNamePath
+} = require('./fileNameCachePlugin')
 module.exports = class Dll {
-    static DefaultDllConfig() {
+    /**
+     * dll default config
+     */
+    static getDllDefaultConfig() {
         return {
+            // 是否开启dll
             open: 'auto',
+            // 自动将vender文件注入
             inject: true
         }
     }
-    static DefaultConfig() {
+    static getDefaultConfig() {
         return {
+            // manifeat file
             manifest: '[name].manifest.json',
+            // output fileName
             filename: '[name].[hash:8].dll.js',
+            // common library name
             library: '[name]_library',
-            outputDir: 'dll',
+            // the name of directory specified after output
+            outputDir: 'dll'
         }
     }
 
     constructor(webpackConfig = {}, dllConfig = {}) {
         this.webpackConfig = webpackConfig
-        this.dllConfig = merge(Dll.DefaultDllConfig(), dllConfig)
+        this.dllConfig = merge(Dll.getDllDefaultConfig(), dllConfig)
         this.context = webpackConfig.context
         this.isCommand = false
         this.isOpen = false
         this.inject = this.dllConfig.inject
 
-
-        merge(this, Dll.DefaultConfig())
-        this.outputPath = this.dllConfig.output || path.join(this.context, './public', this.outputDir)
+        // TODO: release more option
+        merge(this, Dll.getDefaultConfig())
 
         // init
         this.initEntry()
@@ -37,15 +57,29 @@ module.exports = class Dll {
     }
 
     // init options ------
+    // init entey
     initEntry() {
         this.entry = normalizeRntry(this.dllConfig.entry)
     }
     initOutputPath() {
-        let dllConfig = this.dllConfig
-        let outputPath = isObject(dllConfig.output) && dllConfig.output.path
-        if (outputPath) {
-            this.outputPath = outputPath
+        let output = this.dllConfig.output
+        // normal
+        if (typeof output === 'string') {
+            output = {
+                path: output
+            }
         }
+        if (output && !isObject(output)) {
+            output = null
+            // TODO: 
+            console.warn(`type check failed for output parameter, Expected Object or String`)
+        }
+        const DEFAULT_OUTPUT_PATH = path.join(
+            this.context,
+            './public',
+            this.outputDir
+        )
+        this.outputPath = (output && output.path) || DEFAULT_OUTPUT_PATH
     }
     initOpen() {
         let open = this.dllConfig.open
@@ -53,8 +87,8 @@ module.exports = class Dll {
     }
     initCatchPath() {
         let cacheFilePath = this.dllConfig.cacheFilePath
-        if(cacheFilePath) {
-            this.setCacheFileNamePath(cacheFilePath)
+        if (cacheFilePath) {
+            setCacheFileNamePath(cacheFilePath)
         }
     }
 
@@ -75,15 +109,24 @@ module.exports = class Dll {
     }
 
     // resolve args ---------------
-
-    resolvePath(...args) {
-        return path.resolve(this.outputPath, ...args)
+    /**
+     * the method resolves a sequence of paths into an absolute path which relative to outputPath
+     * @param  {subPath} args A sequence of paths
+     */
+    resolvePathRelativeOutputPath(subPath) {
+        return path.resolve(this.outputPath, subPath)
     }
 
+    /**
+     * get entry config for webpack
+     */
     resolveEntry() {
         return JSON.parse(JSON.stringify(this.entry))
     }
 
+    /**
+     * get output config for webpack
+     */
     resolveOutput() {
         return {
             path: this.outputPath,
@@ -92,55 +135,62 @@ module.exports = class Dll {
         }
     }
 
+    /**
+     * get dll config for webpack.DllPlugin plugin
+     */
     resolveDllArgs() {
-        return [{
-            path: this.resolvePath('./', this.manifest),
-            name: this.library
-        }]
+        return [
+            {
+                path: this.resolvePathRelativeOutputPath(this.manifest),
+                name: this.library
+            }
+        ]
     }
 
-
+    /**
+     * get dllReferenceArgs config for webpack.DllReferenceArgs plugin
+     */
     resolveDllReferenceArgs() {
         return Object.keys(this.resolveEntry())
-            .map((entryName) => {
-                let jsonPath = this.resolvePath('./', this.manifest.replace('[name]', entryName));
-                let manifest = tryGetManifestJson(jsonPath)
-                if (!manifest) return false
+            .map(entryName => {
+                const jsonPath = this.resolvePathRelativeOutputPath(
+                    this.manifest.replace('[name]', entryName)
+                )
+                return tryGetManifestJson(jsonPath)
+            })
+            .filter(i => !!i)
+            .map(manifest => {
                 return {
                     context: this.context,
                     manifest
                 }
             })
-            .filter((i) => !!i)
     }
 
+    /**
+     * get config args for add-asset-html-webpack-plugin plugin
+     */
     resolveAddAssetHtmlArgs() {
-        let list = getCacheFileNameList().map((i) => this.resolvePath(i))
+        let resolvePathRelativeOutputPathBind = this.resolvePathRelativeOutputPath.bind(
+            this
+        )
+        let sourceList = getCacheFileNameList().map(
+            resolvePathRelativeOutputPathBind
+        )
         let assetHtmlPluginArg
-        if (list.length > 0) {
-            assetHtmlPluginArg = list.map(this._getAssetHtmlPluginDefaultArg.bind(this)).filter(i => i)
+        if (sourceList.length > 0) {
+            assetHtmlPluginArg = sourceList
+                .filter(isAcceptTypeByAssetPluginByPath)
+                .map(getAssetHtmlPluginDefaultArg)
         } else {
+            // TODO: remove next verson
+            console.warn('您更新最新版本，请您重新构建一下dll文件，执行npm run dll')
             assetHtmlPluginArg = compose(
-                this._getAssetHtmlPluginDefaultArg.bind(this),
-                this.resolvePath.bind(this),
+                getAssetHtmlPluginDefaultArg,
+                resolvePathRelativeOutputPathBind,
                 replaceAsyncName
             )(this.filename)
         }
         return [assetHtmlPluginArg]
-    }
-
-    _getAssetHtmlPluginDefaultArg(filepath) {
-        // 获取格式
-        let typeOfAsset = getFileType(filepath)
-        if (!(/js|css/.test(typeOfAsset))) {
-            return false
-        }
-        return {
-            filepath,
-            includeSourcemap: false,
-            typeOfAsset: typeOfAsset,
-            publicPath: typeOfAsset,
-            outputPath: typeOfAsset
-        }
     }
 }

@@ -3,7 +3,7 @@
  * @param {any} i validate source
  * @return {Boolean} result
  */
-const isObject = (i) => Object.prototype.toString.call(i) === '[object Object]'
+const isObject = i => Object.prototype.toString.call(i) === '[object Object]'
 
 /**
  * forEach Object
@@ -36,7 +36,7 @@ const isFunctionAndCall = (fn, context, ...args) => {
  * @returns {Object} target
  */
 const merge = (target, ...sources) => {
-    sources.forEach((sourceItem) => {
+    sources.forEach(sourceItem => {
         if (!isObject(sourceItem)) {
             return
         }
@@ -47,7 +47,7 @@ const merge = (target, ...sources) => {
     return target
 }
 
-const log = (msg) => {
+const log = msg => {
     msg && console && console.log && console.log(msg)
 }
 
@@ -68,7 +68,7 @@ const compose = function compose(...funs) {
 // match dll
 const MatchEntryNameREG = /^(dll)$|^dll_([a-zA-Z]+)/
 exports.MatchEntryName_REG = MatchEntryNameREG
-exports.getEntryByWConfig = (entry) => {
+exports.getEntryByWConfig = entry => {
     if (!isObject(entry)) {
         return {}
     }
@@ -77,10 +77,7 @@ exports.getEntryByWConfig = (entry) => {
         .map(i => {
             let result = i.match(MatchEntryNameREG)
             if (result) {
-                let {
-                    1: defaultName,
-                    2: entryName
-                } = result
+                let { 1: defaultName, 2: entryName } = result
                 return defaultName || entryName
             }
             return result
@@ -106,7 +103,7 @@ exports.normalizeRntry = (entry = {}) => {
     return entry
 }
 
-exports.tryGetManifestJson = (jsonPath) => {
+exports.tryGetManifestJson = jsonPath => {
     let getJon = null
     try {
         getJon = require(jsonPath)
@@ -117,7 +114,9 @@ exports.tryGetManifestJson = (jsonPath) => {
         log(' ')
         log(`no found ${jsonPath}`)
         log(' ')
-        log(`if you want to use DllReferencePlugin，execute the command 'npm run dll' first`)
+        log(
+            `if you want to use DllReferencePlugin，execute the command 'npm run dll' first`
+        )
         log(' ')
     }
     return getJon
@@ -125,13 +124,41 @@ exports.tryGetManifestJson = (jsonPath) => {
 
 exports.replaceAsyncName = i => i.replace(/\[.+\]/g, '*')
 
-// 获取到
-
-const getFileType = (filePath) => {
+/**
+ * get file type
+ * @param {String} filePath
+ */
+const getFileType = filePath => {
     return filePath.substring(filePath.lastIndexOf('.') + 1)
 }
 
+const isAcceptTypeByAssetPlugin = typeOfAsset => {
+    return /js|css/.test(typeOfAsset)
+}
 
+const isAcceptTypeByAssetPluginByPath = compose(
+    isAcceptTypeByAssetPlugin,
+    getFileType
+)
+
+/**
+ * get default Args for add-asset-html-webpack-plugin plugin
+ * @param {string} filepath filePath
+ */
+const getAssetHtmlPluginDefaultArg = filepath => {
+    // 获取格式
+    let typeOfAsset = getFileType(filepath)
+    if (!isAcceptTypeByAssetPlugin(typeOfAsset)) {
+        return false
+    }
+    return {
+        filepath,
+        includeSourcemap: false,
+        typeOfAsset: typeOfAsset,
+        publicPath: typeOfAsset,
+        outputPath: typeOfAsset
+    }
+}
 
 exports.log = log
 exports.merge = merge
@@ -141,3 +168,5 @@ exports.isObject = isObject
 exports.forEachObj = forEachObj
 exports.isInstallOf = isInstallOf
 exports.isFunctionAndCall = isFunctionAndCall
+exports.getAssetHtmlPluginDefaultArg = getAssetHtmlPluginDefaultArg
+exports.isAcceptTypeByAssetPluginByPath = isAcceptTypeByAssetPluginByPath

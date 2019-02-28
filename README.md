@@ -139,6 +139,57 @@ module.exports = {
    }
 }
 ```
+
+### output config
+>  打包vendor文件输出配置
+``` javascript
+module.exports = {
+  // Other options...
+
+  pluginOptions: {
+      dll: {
+        entry: ['vue'],
+        // 可以打包完的vendor文件放到指定的位置
+        output: path.resolve(__dirname, './public/newDllDir')
+
+        // or
+        output: {
+          path: path.resolve(__dirname, './public/newDllDir')
+        }
+      }
+   }
+}
+```
+
+
+### cacheFilePath config
+
+在了解这个配置之前，先简单了解一下v`ue-cli-plugin-dll`的vendor文件获取机制，在获取vendor文件的时候有两种方式实现。
+1. 在生成vendor文件的时候将所有文件路径以文件（cache.dll.json）的方式存储起来，在自动注入的时候去获取，这样能准确获取最新一次打包完成的所有文件路径。
+2. 通过入口名模糊匹配到文件手动注入。这种方式有很大的不可确定因素，可能导致多余文件的匹配从而引用混乱。
+所以建议采用第一种方式（默认方式）进行，第二种方式只是作为备选方案。
+
+在第一种方式的实现上，`vue-cli-plugin-dll`插件默认将文件存储在 `vue-cli-plugin-dll`的src目录下，这种情况会导致两个问题
+1. 在线上部署机器中不存在缓存文件导致构建出现问题，
+2. 在升级插件包的时候缓存丢失导致构建出现问题。
+   
+了解了手动注入的文件获取机制后，为了解决此项问题，我们加入了`cache.dll.json`文件目录路径的配置，该配置可以将`npm run dll`生成的`cache.dll.json`存放在指定位置，从而避免以上问题
+``` javascript
+module.exports = {
+  // Other options...
+
+  pluginOptions: {
+      dll: {
+        entry: ['vue'],
+        // 目录的绝对路径
+        cacheFilePath: path.resolve(__dirname, './public')
+      }
+   }
+}
+```
+
+
+
 ### 按需加载
 由于预打包机制跟主打包机制是完全分割的，所以我们只能采用另外一种方式进行模拟按需打包
 >> 在这个例子中，以elemnent-ui为例子，做按需加载部分组件。
