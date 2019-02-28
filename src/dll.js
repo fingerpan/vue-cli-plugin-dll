@@ -1,6 +1,6 @@
 const path = require('path')
 const { isObject, merge, normalizeRntry, tryGetManifestJson, replaceAsyncName, getFileType, compose } = require('./helper')
-const { getCacheFileNameList } = require('./fileNameCachePlugin')
+const { getCacheFileNameList, setCacheFileNamePath } = require('./fileNameCachePlugin')
 module.exports = class Dll {
     static DefaultDllConfig() {
         return {
@@ -20,10 +20,11 @@ module.exports = class Dll {
     constructor(webpackConfig = {}, dllConfig = {}) {
         this.webpackConfig = webpackConfig
         this.dllConfig = merge(Dll.DefaultDllConfig(), dllConfig)
-        this.context = webpackConfig.context || __dirname
+        this.context = webpackConfig.context
         this.isCommand = false
         this.isOpen = false
         this.inject = this.dllConfig.inject
+
 
         merge(this, Dll.DefaultConfig())
         this.outputPath = this.dllConfig.output || path.join(this.context, './public', this.outputDir)
@@ -32,6 +33,7 @@ module.exports = class Dll {
         this.initEntry()
         this.initOutputPath()
         this.initOpen()
+        this.initCatchPath()
     }
 
     // init options ------
@@ -48,6 +50,12 @@ module.exports = class Dll {
     initOpen() {
         let open = this.dllConfig.open
         this.isOpen = open === 'auto' ? this.validateEntry() : open
+    }
+    initCatchPath() {
+        let cacheFilePath = this.dllConfig.cacheFilePath
+        if(cacheFilePath) {
+            this.setCacheFileNamePath(cacheFilePath)
+        }
     }
 
     // tool -------------

@@ -9,8 +9,9 @@ const Dll = require('./src/dll.js')
 
 module.exports = (api, options) => {
     const webpack = require('webpack')
-    let dllConfig = (options.pluginOptions && options.pluginOptions.dll) || {}
-    let dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
+    const dllConfig = (options.pluginOptions && options.pluginOptions.dll) || {}
+    const dllInstall = new Dll(api.resolveWebpackConfig(), dllConfig)
+
 
     api.chainWebpack((config) => {
         if (!dllInstall.isOpen || dllInstall.isCommand === true) return
@@ -52,7 +53,7 @@ module.exports = (api, options) => {
     }, async function dll(args) {
         dllInstall.callCommand()
 
-        // entry is must be
+        // entry parameter can not be empty
         if (!dllInstall.validateEntry()) {
             throw Error('"entry" parameter no found, more config url:')
         }
