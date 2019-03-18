@@ -86,7 +86,7 @@ module.exports = (api, options) => {
             })
 
             let webpackConfig = api.resolveWebpackConfig()
-            let VueLoaderPlugin = require('vue-loader/lib/plugin')
+            let { VueLoaderPlugin } = require('vue-loader')
             let DefinePlugin = require('webpack/lib/DefinePlugin')
             let FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
             let NamedChunksPlugin = require('webpack/lib/NamedChunksPlugin')
