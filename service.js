@@ -73,6 +73,7 @@ module.exports = (api, options) => {
                     .use(FileNameCachePlugin)
 
                 config.optimization.delete('splitChunks')
+                config.optimization.delete('runtimeChunk')
                 config.devtool(false)
 
                 // set output
