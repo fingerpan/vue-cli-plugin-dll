@@ -52,7 +52,7 @@ const log = msg => {
 }
 
 const isInstallOf = (target, ...classList) => {
-    return classList.some(C => target instanceof C)
+    return classList.some(C => target instanceof C || target.constructor === C || target.constructor.name === C.name)
 }
 
 const compose = function compose(...funs) {
