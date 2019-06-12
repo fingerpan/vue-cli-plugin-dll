@@ -155,7 +155,7 @@ const getAssetHtmlPluginDefaultArg = filepath => {
         filepath,
         includeSourcemap: false,
         typeOfAsset: typeOfAsset,
-        publicPath: typeOfAsset,
+        publicPath: '/' + typeOfAsset,
         outputPath: typeOfAsset
     }
 }
