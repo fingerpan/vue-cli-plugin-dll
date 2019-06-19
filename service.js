@@ -33,16 +33,18 @@ module.exports = (api, options) => {
                         require('add-asset-html-webpack-plugin'),
                         dll.resolveAddAssetHtmlArgs()
                     )
-                // add copy agrs
-                config.plugin('copy').tap(args => {
-                    args[0][0].ignore.push(dll.outputDir + '/**')
-                    args[0].push({
-                        from: dll.outputPath,
-                        toType: 'dir',
-                        ignore: ['*.js', '*.css', '*.manifest.json']
+                if(config.plugins.has('copy')) {
+                    // add copy agrs
+                    config.plugin('copy').tap(args => {
+                        args[0][0].ignore.push(dll.outputDir + '/**')
+                        args[0].push({
+                            from: dll.outputPath,
+                            toType: 'dir',
+                            ignore: ['*.js', '*.css', '*.manifest.json']
+                        })
+                        return args
                     })
-                    return args
-                })
+                }
             }
         })
     })
