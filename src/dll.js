@@ -71,7 +71,7 @@ module.exports = class Dll {
         }
         if (output && !isObject(output)) {
             output = null
-            // TODO: 
+            // TODO:
             console.warn(`type check failed for output parameter, Expected Object or String`)
         }
         const DEFAULT_OUTPUT_PATH = path.join(
@@ -178,15 +178,21 @@ module.exports = class Dll {
             resolvePathRelativeOutputPathBind
         )
         let assetHtmlPluginArg
+
+        const dll = this
+        function _getAssetHtmlPluginDefaultArg(filename) {
+            return getAssetHtmlPluginDefaultArg(filename, dll)
+        }
+
         if (sourceList.length > 0) {
             assetHtmlPluginArg = sourceList
                 .filter(isAcceptTypeByAssetPluginByPath)
-                .map(getAssetHtmlPluginDefaultArg)
+                .map(_getAssetHtmlPluginDefaultArg)
         } else {
             // TODO: remove next verson
             console.warn('您更新最新版本，请您重新构建一下dll文件，执行npm run dll')
             assetHtmlPluginArg = compose(
-                getAssetHtmlPluginDefaultArg,
+                _getAssetHtmlPluginDefaultArg,
                 resolvePathRelativeOutputPathBind,
                 replaceAsyncName
             )(this.filename)
