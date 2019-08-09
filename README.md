@@ -1,3 +1,6 @@
+由于原始项目，迟迟不肯修复一些问题，这里仅修改了一些bug。
+
+* 新增支持 vue publicPath 参数。
 
 # vue-cli-plugin-dll [![vue-cli3](https://img.shields.io/badge/vue--cli-3.x-brightgreen.svg)](https://github.com/vuejs/vue-cli) ![npm](https://img.shields.io/npm/dm/vue-cli-plugin-dll.svg) [![npm](https://img.shields.io/npm/v/vue-cli-plugin-dll.svg)](https://www.npmjs.com/package/vue-cli-plugin-dll)
 
@@ -11,9 +14,9 @@ $ vue -V
 
 ### 安装
 ``` bash
-$ vue add dll 
+$ vue add dll
 
-# OR 
+# OR
 
 $vue invoke dll
 ```
@@ -83,10 +86,10 @@ module.exports = {
 
 | 参数 | 类型/值集 | 描述| 默认值 | 是否必填 |
 | :--- | :--- | :--- | :--- | :--- |
-| entry | Object/Array/String | 入口配置 | null | true 
-| open | true/false/'auto' | 启用 DllReferencePlugin  | 'auto' | false 
-| output | Object | 打包输出配置 |  | false 
-| output.path | String | 打包后chunk和manifest.json存放的目录 | 'yourProjectPath/public/dll' | false 
+| entry | Object/Array/String | 入口配置 | null | true
+| open | true/false/'auto' | 启用 DllReferencePlugin  | 'auto' | false
+| output | Object | 打包输出配置 |  | false
+| output.path | String | 打包后chunk和manifest.json存放的目录 | 'yourProjectPath/public/dll' | false
 | inject | Boolean | 自动将打包的vendor注入到index.html | true |  false
 | cacheFilePath | String | 将打包后的所有资源路径保存到一个文件(绝对目录路径) | 'yourProjectPath/node_modules/vue-cli-plugin-dll/src' |  false
 
@@ -107,7 +110,7 @@ module.exports = {
           // 多入口
           entry: {
             vendorNameOne: ['vue-route'],
-            vendorNameTwo: ['vue-vuex'], 
+            vendorNameTwo: ['vue-vuex'],
          }
       }
    }
@@ -124,7 +127,7 @@ module.exports = {
       dll: {
           entry: ['vue'],
           // 只在生产环境加入 webpack.DllReferencePlugin 插件
-          open: process.env.NODE_ENV === 'production',      
+          open: process.env.NODE_ENV === 'production',
       }
    }
 }
@@ -177,7 +180,7 @@ module.exports = {
 在第一种方式的实现上，`vue-cli-plugin-dll`插件默认将文件存储在 `vue-cli-plugin-dll`的src目录下，这种情况会导致两个问题
 1. 在线上部署机器中不存在缓存文件导致构建出现问题，
 2. 在升级插件包的时候缓存丢失导致构建出现问题。
-   
+
 了解了手动注入的文件获取机制后，为了解决此项问题，我们加入了`cache.dll.json`文件目录路径的配置，该配置可以将`npm run dll`生成的`cache.dll.json`存放在指定位置，从而避免以上问题
 ``` javascript
 module.exports = {
@@ -227,7 +230,7 @@ module.exports = {
       }
     }
   },
-} 
+}
 ```
 在你的入口文件(main.js)引入这个文件并且注册， eg:
 ```
