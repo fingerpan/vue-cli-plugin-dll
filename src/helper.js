@@ -145,7 +145,7 @@ const isAcceptTypeByAssetPluginByPath = compose(
  * get default Args for add-asset-html-webpack-plugin plugin
  * @param {string} filepath filePath
  */
-const getAssetHtmlPluginDefaultArg = filepath => {
+const getAssetHtmlPluginDefaultArg = (filepath, dll) => {
     // 获取格式
     let typeOfAsset = getFileType(filepath)
     if (!isAcceptTypeByAssetPlugin(typeOfAsset)) {
@@ -155,7 +155,7 @@ const getAssetHtmlPluginDefaultArg = filepath => {
         filepath,
         includeSourcemap: false,
         typeOfAsset: typeOfAsset,
-        publicPath: '/' + typeOfAsset,
+        publicPath: dll.webpackConfig.output.publicPath + typeOfAsset,
         outputPath: typeOfAsset
     }
 }

@@ -1,13 +1,10 @@
 {
-    "name": "vue-cli-plugin-dll",
+    "name": "vue-cli-plugin-dll-fixed-publicpath",
     "version": "1.1.9",
     "description": "vue-cli 3 plugin for Dll and DllReference",
     "main": "service.js",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git"
-    },
-    "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll#readme",
+    "repository": "git+https://github.com/Shu-Ji/vue-cli-plugin-dll.git",
+    "homepage": "https://github.com/Shu-Ji/vue-cli-plugin-dll",
     "keywords": [
         "vue",
         "vue-cli",
@@ -15,7 +12,7 @@
         "Dll",
         "DllReference"
     ],
-    "author": "youngpan <youngpan2014@outlook.com>",
+    "author": "test@test.com",
     "license": "MIT",
     "engines": {
         "node": ">=8.0"
