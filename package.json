@@ -3,8 +3,8 @@
     "version": "1.1.10",
     "description": "vue-cli 3 plugin for Dll and DllReference",
     "main": "service.js",
-    "repository": "git+https://github.com/Shu-Ji/vue-cli-plugin-dll.git",
-    "homepage": "https://github.com/Shu-Ji/vue-cli-plugin-dll",
+    "repository": "git+https://github.com/fingerpan/vue-cli-plugin-dll.git",
+    "homepage": "https://github.com/fingerpan/vue-cli-plugin-dll",
     "keywords": [
         "vue",
         "vue-cli",
@@ -12,25 +12,10 @@
         "Dll",
         "DllReference"
     ],
-    "author": "test@test.com",
+    "author": "youngpan",
     "license": "MIT",
     "engines": {
         "node": ">=8.0"
-    },
-    "_development": true,
-    "_inBundle": false,
-    "_integrity": "sha512-C6LWRaPZMEo2p6Fy2fBUNv1KPSu6IySxne/jQObRIaeguKoc6zaqPi43Hf50FoIWT3kPgPHolcbdMzHeZvtPpA==",
-    "_location": "/vue-cli-plugin-dll",
-    "_phantomChildren": {},
-    "_requested": {
-        "type": "version",
-        "registry": true,
-        "raw": "vue-cli-plugin-dll@1.0.3",
-        "name": "vue-cli-plugin-dll",
-        "escapedName": "vue-cli-plugin-dll",
-        "rawSpec": "1.0.3",
-        "saveSpec": null,
-        "fetchSpec": "1.0.3"
     },
     "dependencies": {
         "add-asset-html-webpack-plugin": "^3.1.2",
