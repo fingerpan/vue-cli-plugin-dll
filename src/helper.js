@@ -151,11 +151,12 @@ const getAssetHtmlPluginDefaultArg = (filepath, dll) => {
     if (!isAcceptTypeByAssetPlugin(typeOfAsset)) {
         return false
     }
+    const publicPath = dll.webpackConfig.output.publicPath
     return {
         filepath,
         includeSourcemap: false,
         typeOfAsset: typeOfAsset,
-        publicPath: dll.webpackConfig.output.publicPath + typeOfAsset,
+        publicPath: publicPath + typeOfAsset,
         outputPath: typeOfAsset
     }
 }

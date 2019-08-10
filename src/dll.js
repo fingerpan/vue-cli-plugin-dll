@@ -13,6 +13,10 @@ const {
     getCacheFileNameList,
     setCacheFileNamePath
 } = require('./fileNameCachePlugin')
+
+/**
+ * class Dll
+ */
 module.exports = class Dll {
     /**
      * dll default config
@@ -20,7 +24,7 @@ module.exports = class Dll {
     static getDllDefaultConfig() {
         return {
             // 是否开启dll
-            open: 'auto',
+            open: true,
             // 自动将vender文件注入
             inject: true
         }
@@ -63,7 +67,7 @@ module.exports = class Dll {
     }
     initOutputPath() {
         let output = this.dllConfig.output
-        // normal
+            // normal
         if (typeof output === 'string') {
             output = {
                 path: output
@@ -71,7 +75,7 @@ module.exports = class Dll {
         }
         if (output && !isObject(output)) {
             output = null
-            // TODO:
+                // TODO:
             console.warn(`type check failed for output parameter, Expected Object or String`)
         }
         const DEFAULT_OUTPUT_PATH = path.join(
@@ -83,7 +87,7 @@ module.exports = class Dll {
     }
     initOpen() {
         let open = this.dllConfig.open
-        this.isOpen = open === 'auto' ? this.validateEntry() : open
+        this.isOpen = open == true ? this.validateEntry() : open
     }
     initCatchPath() {
         let cacheFilePath = this.dllConfig.cacheFilePath
@@ -139,12 +143,10 @@ module.exports = class Dll {
      * get dll config for webpack.DllPlugin plugin
      */
     resolveDllArgs() {
-        return [
-            {
-                path: this.resolvePathRelativeOutputPath(this.manifest),
-                name: this.library
-            }
-        ]
+        return [{
+            path: this.resolvePathRelativeOutputPath(this.manifest),
+            name: this.library
+        }]
     }
 
     /**
@@ -171,15 +173,15 @@ module.exports = class Dll {
      * get config args for add-asset-html-webpack-plugin plugin
      */
     resolveAddAssetHtmlArgs() {
+        const dll = this
         let resolvePathRelativeOutputPathBind = this.resolvePathRelativeOutputPath.bind(
-            this
+            dll
         )
         let sourceList = getCacheFileNameList().map(
             resolvePathRelativeOutputPathBind
         )
         let assetHtmlPluginArg
 
-        const dll = this
         function _getAssetHtmlPluginDefaultArg(filename) {
             return getAssetHtmlPluginDefaultArg(filename, dll)
         }

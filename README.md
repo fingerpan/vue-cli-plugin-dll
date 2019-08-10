@@ -1,6 +1,3 @@
-由于原始项目，迟迟不肯修复一些问题，这里仅修改了一些bug。
-
-* 新增支持 vue publicPath 参数。
 
 # vue-cli-plugin-dll [![vue-cli3](https://img.shields.io/badge/vue--cli-3.x-brightgreen.svg)](https://github.com/vuejs/vue-cli) ![npm](https://img.shields.io/npm/dm/vue-cli-plugin-dll.svg) [![npm](https://img.shields.io/npm/v/vue-cli-plugin-dll.svg)](https://www.npmjs.com/package/vue-cli-plugin-dll)
 
@@ -21,11 +18,8 @@ $ vue add dll
 $vue invoke dll
 ```
 
-
-### 快速开始
-> 最方便的配置
-
-#### 你可以在`vue.config.js` 文件中的pluginOptions中定义一个dll参数对象。
+## 快速开始
+### 1. 简单配置
 ```javascript
 // vue.config.js
 
@@ -37,9 +31,7 @@ $vue invoke dll
     }
  }
 ```
-
-### 生成Dll文件
-
+### 2. 生成dll文件
 ```bash
 $ npm run dll
 
@@ -47,6 +39,7 @@ $ npm run dll
 
 $ npx vue-cli-service dll
 ```
+
 
 ## 配置参数
 > vue.config.js:
@@ -65,12 +58,12 @@ module.exports = {
 
       // 1. 如果你需要在开发环境中不采用开启分包模式，你可以配置open为false。
       // 例如，我们入口配置为 entry: ['vue']， 我们执行npm run dll 构建了vendor包。
-      // 在npm run serve的时候，如果默认open开启的情况下，其实开发环境采用的vue是生成环境的包，因为我们dll命令构建的就是生成环境的包。
+      // 在npm run serve的时候，如果默认open开启的情况下，其实开发环境采用的vue是生产环境的包，因为我们dll命令构建的就是生产环境的包。
       // 这会让我们在开发环境中无法看到vue给我们带来的友好提示建议。
-      // 我们可以配置open : process.env.NODE_ENV === 'production'，只在生成环境开启DllReferencePlugin
+      // 我们可以配置open : process.env.NODE_ENV === 'production'，只在生产环境开启DllReferencePlugin
 
-      // 2. 'auto' 参数会自动识别是否有先执行npm run dll生成分包，如果没有的情况下则不开启dll。
-      open: 'auto',
+      // 2. 参数会自动识别是否有先执行npm run dll生产分包，如果没有的情况下则不开启dll。
+      open: true,
 
 
 
@@ -82,12 +75,12 @@ module.exports = {
 }
 ```
 
-## options
+### options
 
 | 参数 | 类型/值集 | 描述| 默认值 | 是否必填 |
 | :--- | :--- | :--- | :--- | :--- |
 | entry | Object/Array/String | 入口配置 | null | true
-| open | true/false/'auto' | 启用 DllReferencePlugin  | 'auto' | false
+| open | true/false | 是否启用 DllReferencePlugin(默认自动识别)| true | false
 | output | Object | 打包输出配置 |  | false
 | output.path | String | 打包后chunk和manifest.json存放的目录 | 'yourProjectPath/public/dll' | false
 | inject | Boolean | 自动将打包的vendor注入到index.html | true |  false
@@ -132,6 +125,7 @@ module.exports = {
    }
 }
 ```
+
 ### inject config
 >  是否自动将执行dll命令执行打包的vendor包自动注入到index.html中去
 ``` javascript
@@ -168,7 +162,6 @@ module.exports = {
    }
 }
 ```
-
 
 ### cacheFilePath config
 
