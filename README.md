@@ -1,8 +1,7 @@
 
 # vue-cli-plugin-dll [![vue-cli3](https://img.shields.io/badge/vue--cli-3.x-brightgreen.svg)](https://github.com/vuejs/vue-cli) ![npm](https://img.shields.io/npm/dm/vue-cli-plugin-dll.svg) [![npm](https://img.shields.io/npm/v/vue-cli-plugin-dll.svg)](https://www.npmjs.com/package/vue-cli-plugin-dll)
 
-
-    This is a vue-cli 3.x plugin for webpack [Dll-Plugin](https://webpack.js.org/plugins/dll-plugin/) that can drastically improve build time performance. `vue-cli-plugin-dll` plugin register `dll` instruction to avoid adding extra webpack config file, it also insert DllReferencePlugin and inject chunk files automatically when you run `dev/build` directives.
+  This is a vue-cli 3.x plugin for webpack [Dll-Plugin](https://webpack.js.org/plugins/dll-plugin/) that can drastically improve build time performance. `vue-cli-plugin-dll` plugin register `dll` instruction to avoid adding extra webpack config file, it also insert DllReferencePlugin and inject chunk files automatically when you run `dev/build` directives.
 
 ### English | [中文](https://github.com/fingerpan/vue-cli-plugin-dll/wiki/zh_cn.md)
 ## Quick Start
