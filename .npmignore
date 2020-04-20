@@ -1,6 +1,9 @@
 # Dependency directories
 node_modules
 
+# editor
+.vscode/
+
 # npm
 npm-debug.log
 package-lock.json

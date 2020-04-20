@@ -12,42 +12,40 @@ FileNameCachePlugin.cacheFilePath = DEFAULT_CACHE_File_PATH
 FileNameCachePlugin.pluginName = PLUGIN_NAME
 
 FileNameCachePlugin.saveCacheFileNameList = function saveCacheFileNameList(
-    list
+  list
 ) {
-    let cacheFilePath = FileNameCachePlugin.cacheFilePath
-    fs.writeFile(cacheFilePath, JSON.stringify(list), noop)
+  let cacheFilePath = FileNameCachePlugin.cacheFilePath
+  fs.writeFile(cacheFilePath, JSON.stringify(list), noop)
 }
 
 FileNameCachePlugin.getCacheFileNameList = function getCacheFileNameList() {
-    let data = null
-    try {
-        data = JSON.parse(
-            fs.readFileSync(FileNameCachePlugin.cacheFilePath, 'utf8')
-        )
-    } catch (e) {
-        data = []
-    }
-    return data
+  let data = null
+  try {
+    data = JSON.parse(
+      fs.readFileSync(FileNameCachePlugin.cacheFilePath, 'utf8')
+    )
+  } catch (e) {
+    data = []
+  }
+  return data
 }
 
 FileNameCachePlugin.setCacheFileNamePath = function setCacheFileNamePath(
-    absolutePath
+  absolutePath
 ) {
-    let absoluteFilePath = path.resolve(absolutePath, './', CATCH_FILE_NAME)
-    FileNameCachePlugin.cacheFilePath = absoluteFilePath
+  let absoluteFilePath = path.resolve(absolutePath, './', CATCH_FILE_NAME)
+  FileNameCachePlugin.cacheFilePath = absoluteFilePath
 }
 
 FileNameCachePlugin.prototype.apply = function apply(compiler) {
-    compiler.hooks.emit.tapAsync(
-        FileNameCachePlugin.pluginName,
-        (compilation, callback) => {
-            // save last run dll command output name
-            FileNameCachePlugin.saveCacheFileNameList(
-                Object.keys(compilation.assets)
-            )
-            callback()
-        }
-    )
+  compiler.hooks.emit.tapAsync(
+    FileNameCachePlugin.pluginName,
+    (compilation, callback) => {
+      // save last run dll command output name
+      FileNameCachePlugin.saveCacheFileNameList(Object.keys(compilation.assets))
+      callback()
+    }
+  )
 }
 
 module.exports = FileNameCachePlugin

@@ -1,138 +1,113 @@
 const {
-    log,
-    isInstallOf,
-    forEachObj,
-    isFunctionAndCall
+  log,
+  isInstallOf,
+  forEachObj,
+  isFunctionAndCall,
 } = require('./src/helper')
 
 const Dll = require('./src/dll.js')
 
 module.exports = (api, options) => {
-    const webpack = require('webpack')
-    const dllConfig = (options.pluginOptions && options.pluginOptions.dll) || {}
-    const dll = new Dll(api.resolveWebpackConfig(), dllConfig)
+  const webpack = require('webpack')
+  const dllConfig = (options.pluginOptions && options.pluginOptions.dll) || {}
+  const dll = new Dll(api.resolveWebpackConfig(), dllConfig)
 
-    api.chainWebpack(config => {
-        if (!dll.isOpen || dll.isCommand === true) return
+  api.registerCommand(
+    'dll',
+    {
+      description: 'build dll',
+      usage: 'vue-cli-service dll',
+      options: {
+        '--mode': 'specify env mode (default: production)',
+        '--inspect': 'output webpack config ',
+        '--verbose': 'show full function definitions in output',
+      },
+    },
+    async function (args) {
+      dll.callCommand()
 
-        const referenceArgs = dll.resolveDllReferenceArgs()
+      // entry parameter can not be empty
+      if (!dll.validateEntry()) {
+        throw Error('"entry" parameter no found, more config url:')
+      }
 
-        config.when(referenceArgs.length !== 0, config => {
-            // add DllReferencePlugins
-            referenceArgs.forEach(args => {
-                config
-                    .plugin(`dll-reference-${args.manifest.name}`)
-                    .use(webpack.DllReferencePlugin, [args])
-            })
+      const FileNameCachePlugin = require('./src/fileNameCachePlugin')
 
-            // auto inject
-            if (dll.inject) {
-                config
-                    .plugin('dll-add-asset-html')
-                    .use(
-                        require('add-asset-html-webpack-plugin'),
-                        dll.resolveAddAssetHtmlArgs()
-                    )
-                if(config.plugins.has('copy')) {
-                    // add copy agrs
-                    config.plugin('copy').tap(args => {
-                        args[0][0].ignore.push(dll.outputDir + '/**')
-                        args[0].push({
-                            from: dll.outputPath,
-                            toType: 'dir',
-                            ignore: ['*.js', '*.css', '*.manifest.json']
-                        })
-                        return args
-                    })
-                }
-            }
+      const { DllPlugin } = webpack
+      api.chainWebpack((config) => {
+        config
+          .plugin('dll')
+          .use(DllPlugin, dll.resolveDllArgs())
+          .end()
+          .plugin('file-list-plugin')
+          .use(FileNameCachePlugin)
+
+        config.optimization.delete('splitChunks')
+        config.optimization.delete('runtimeChunk')
+
+        // set output
+        forEachObj(dll.resolveOutput(), (fnName, value) => {
+          isFunctionAndCall(config.output[fnName], config.output, value)
         })
-    })
+      })
 
-    api.registerCommand(
-        'dll',
-        {
-            description: 'build dll',
-            usage: 'vue-cli-service dll',
-            options: {}
-        },
-        async function(args) {
-            dll.callCommand()
+      const webpackConfig = api.resolveWebpackConfig()
+      const { VueLoaderPlugin } = require('vue-loader')
+      const DefinePlugin = require('webpack/lib/DefinePlugin')
+      const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
+      const NamedChunksPlugin = require('webpack/lib/NamedChunksPlugin')
+      const MiniCssExtreactPlugin = require('mini-css-extract-plugin')
+      const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+        .BundleAnalyzerPlugin
+      const fs = require('fs-extra')
 
-            // entry parameter can not be empty
-            if (!dll.validateEntry()) {
-                throw Error('"entry" parameter no found, more config url:')
-            }
+      // filter plugins
+      webpackConfig.plugins = webpackConfig.plugins.filter((i) =>
+        isInstallOf(
+          i,
+          VueLoaderPlugin,
+          DefinePlugin,
+          FriendlyErrorsWebpackPlugin,
+          NamedChunksPlugin,
+          MiniCssExtreactPlugin,
+          webpack.DllPlugin,
+          FileNameCachePlugin,
+          BundleAnalyzerPlugin
+        )
+      )
 
-            const FileNameCachePlugin = require('./src/fileNameCachePlugin')
+      // reset entry
+      webpackConfig.entry = dll.resolveEntry()
 
-            api.chainWebpack(config => {
-                config
-                    .plugin('dll')
-                    .use(webpack.DllPlugin, dll.resolveDllArgs())
-                    .end()
-                    .plugin('file-list-plugin')
-                    .use(FileNameCachePlugin)
+      if (args.inspect) {
+        const { verbose } = args
+        const { toString } = require('webpack-chain')
+        const { highlight } = require('cli-highlight')
+        const output = toString(webpackConfig, { verbose })
+        console.log(highlight(output, { language: 'js' }))
+        return
+      }
 
-                config.optimization.delete('splitChunks')
-                config.optimization.delete('runtimeChunk')
-                config.devtool(false)
+      // remove dir
+      fs.remove(dll.outputPath)
 
-                // set output
-                forEachObj(dll.resolveOutput(), (fnName, value) => {
-                    isFunctionAndCall(
-                        config.output[fnName],
-                        config.output,
-                        value
-                    )
-                })
-            })
+      log('Starting build dll...')
+      return new Promise((resolve, reject) => {
+        webpack(webpackConfig, (err, stats) => {
+          if (err) {
+            return reject(err)
+          } else if (stats.hasErrors()) {
+            return reject(new Error('Build failed with errors.'))
+          }
 
-            let webpackConfig = api.resolveWebpackConfig()
-            let { VueLoaderPlugin } = require('vue-loader')
-            let DefinePlugin = require('webpack/lib/DefinePlugin')
-            let FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
-            let NamedChunksPlugin = require('webpack/lib/NamedChunksPlugin')
-            let MiniCssExtreactPlugin = require('mini-css-extract-plugin')
-            let fs = require('fs-extra')
-
-            // filter plugins
-            webpackConfig.plugins = webpackConfig.plugins.filter(i =>
-                isInstallOf(
-                    i,
-                    VueLoaderPlugin,
-                    DefinePlugin,
-                    FriendlyErrorsWebpackPlugin,
-                    NamedChunksPlugin,
-                    MiniCssExtreactPlugin,
-                    webpack.DllPlugin,
-                    FileNameCachePlugin
-                )
-            )
-
-            // reset entry
-            webpackConfig.entry = dll.resolveEntry()
-
-            // remove dir
-            fs.remove(dll.outputPath)
-
-            log('Starting build dll...')
-            return new Promise((resolve, reject) => {
-                webpack(webpackConfig, (err, stats) => {
-                    if (err) {
-                        return reject(err)
-                    } else if (stats.hasErrors()) {
-                        return reject(new Error('Build failed with errors.'))
-                    }
-
-                    log('Build complete.')
-                    resolve()
-                })
-            })
-        }
-    )
+          log('Build complete.')
+          resolve()
+        })
+      })
+    }
+  )
 }
 
 module.exports.defaultModes = {
-    dll: 'production'
+  dll: 'production',
 }
