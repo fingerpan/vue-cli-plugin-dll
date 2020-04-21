@@ -55,6 +55,7 @@ $ npx vue-cli-service dll
 | open | Boolean | whether to add DllReferencePlugin plugin  | true | false
 | output | Object | output |  | false
 | output.path | String | The output directory as an absolute path | 'yourProjectPath/public/dll' | false
+| output.publicPath | Srting | publicPath | '' | false 
 | inject | Boolean | auto inject file to index.html | true |  false
 | cacheFilePath | String | The path that save vender path| 'yourProjectPath/node_modules/vue-cli-plugin-dll/src' |  false
 
