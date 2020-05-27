@@ -94,6 +94,7 @@ module.exports = (api, options) => {
             let FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
             let NamedChunksPlugin = require('webpack/lib/NamedChunksPlugin')
             let MiniCssExtreactPlugin = require('mini-css-extract-plugin')
+            let OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin')
             let fs = require('fs-extra')
 
             // filter plugins
@@ -106,7 +107,8 @@ module.exports = (api, options) => {
                     NamedChunksPlugin,
                     MiniCssExtreactPlugin,
                     webpack.DllPlugin,
-                    FileNameCachePlugin
+                    FileNameCachePlugin,
+                    OptimizeCssnanoPlugin
                 )
             )
 
