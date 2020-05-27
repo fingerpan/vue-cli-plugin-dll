@@ -21,7 +21,8 @@
         "add-asset-html-webpack-plugin": "^3.1.2",
         "friendly-errors-webpack-plugin": "^1.7.0",
         "mini-css-extract-plugin": "^0.5.0",
-        "vue-loader": "^15.7.0"
+        "vue-loader": "^15.7.0",
+        "@intervolga/optimize-cssnano-plugin": "^1.0.6"
     },
     "peerDependencies": {
         "@vue/cli-service": "^3.3.0"
