@@ -29,7 +29,7 @@ $vue invoke dll
  module.exports = {
     pluginOptions: {
         dll: {
-            entry: ['vue', 'vue-route'],
+            entry: ['vue', 'vue-router'],
             cacheFilePath: path.resolve(__dirname, './public')
         }
     }
